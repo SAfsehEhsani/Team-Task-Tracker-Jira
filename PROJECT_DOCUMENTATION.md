@@ -159,6 +159,19 @@ An automated audit trail embedded in every team workspace:
 
 ---
 
+### 7. Live MongoDB Database & JSON Inspector
+
+Accessible directly from the Dashboard by clicking the **"Storage: MongoDB"** stat card (Admin-only):
+* **Live Collection Tabs**: Filter and browse by `Users`, `Teams`, `Tasks`, `Activities`, and `Invitations`.
+* **Multiple View Modes**:
+  * **JSON Syntax**: Formatted, syntax-highlighted JSON representation with full attributes (emails, names, task assignees, timestamps).
+  * **Cards**: Visual entity cards with badges and quick metadata.
+  * **Raw Dump**: Plain RFC 8259 JSON format for easy copy-pasting.
+* **Instant Export & Copy**: 1-click **"Copy JSON"** and **"Export Dump"** to download the complete database snapshot as a `.json` file.
+* **Strict RBAC Guard**: Backend endpoint `GET /api/auth/database-inspector/` is protected by `IsAdminUserRole` (HTTP 403 Forbidden for non-admins).
+
+---
+
 ## How to Run Locally
 
 ### Prerequisites
