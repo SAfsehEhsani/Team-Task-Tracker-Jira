@@ -31,6 +31,64 @@ Open your browser: **[http://localhost:3000](http://localhost:3000)**
 ### Manual Launch (Command Line)
 
 **Terminal 1 — Backend:**
+
+1. Start MongoDB Service (Windows)
+Open Command Prompt as Administrator and run:
+
+cmd
+net start MongoDB
+2. Terminal 1: Setup & Launch Backend (Django REST Framework)
+In the project root folder, open your first Command Prompt and run:
+
+cmd
+:: 1. Create a virtual environment (only needed once)
+python -m venv backend_venv
+:: 2. Activate the virtual environment
+backend_venv\Scripts\activate
+:: 3. Install required backend libraries (only needed once)
+pip install -r backend\requirements.txt
+:: 4. Start the Django backend server
+python backend\manage.py runserver 127.0.0.1:8000
+Backend status: Running at http://127.0.0.1:8000
+
+3. Terminal 2: Setup & Launch Frontend (Next.js)
+Open a new second Command Prompt window in the project root folder and run:
+
+cmd
+:: 1. Navigate to the frontend directory
+cd frontend
+:: 2. Install npm dependencies (only needed once)
+npm install
+:: 3. Start the Next.js development server
+npm run dev
+Frontend status: Running at http://localhost:3000
+
+Method 3: For macOS / Linux Users
+If someone is using macOS or Linux, they can run the shell script:
+
+bash
+chmod +x start.sh
+./start.sh
+Or manually:
+
+bash
+# Terminal 1 (Backend):
+python3 -m venv backend_venv
+source backend_venv/bin/activate
+pip install -r backend/requirements.txt
+python backend/manage.py runserver 127.0.0.1:8000
+# Terminal 2 (Frontend):
+cd frontend
+npm install
+npm run dev
+Access the Application in Your Browser
+Once the servers are running, open your web browser:
+
+Web Application (Frontend): http://localhost:3000
+Backend API Health Check: http://127.0.0.1:8000/api/health/
+
+
+
 ```powershell
 .\backend_venv\Scripts\python backend\manage.py runserver 127.0.0.1:8000
 ```
