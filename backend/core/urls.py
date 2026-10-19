@@ -35,7 +35,28 @@ class HealthCheckView(APIView):
 
 
 
+class RootApiView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request):
+        return Response({
+            'status': 'online',
+            'service': 'Team Task Tracker Backend API',
+            'health_check': '/api/health/',
+            'message': 'Backend is running smoothly! Frontend is available at http://localhost:3000',
+            'endpoints': {
+                'health': '/api/health/',
+                'auth': '/api/auth/',
+                'teams': '/api/teams/',
+                'tasks': '/api/tasks/',
+                'activity': '/api/activity/'
+            }
+        })
+
 urlpatterns = [
+    path('', RootApiView.as_view(), name='root_api'),
+    path('api/', RootApiView.as_view(), name='api_index'),
     path('api/health/', HealthCheckView.as_view(), name='health_check'),
     path('api/auth/', include('authentication.urls')),
     path('api/teams/', include('teams.urls')),

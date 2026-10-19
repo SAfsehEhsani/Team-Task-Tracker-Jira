@@ -57,9 +57,9 @@ def run_all_tests():
     print(f"  [PASS] Active Registered Users in MongoDB: {data.get('user_count')}")
 
     # -------------------------------------------------------------
-    # STEP 3: Real User Self-Registration (Strict Member Role)
+    # STEP 3: Real User Self-Registration (Member & Admin Choices)
     # -------------------------------------------------------------
-    print("\n--- [3/10] Testing Real User Registration ---")
+    print("\n--- [3/10] Testing Real User Registration (Role Choices) ---")
     unique_ts = int(time.time())
     member_email = f"real_member_{unique_ts}@company.org"
     member_password = "Password123!"
@@ -67,14 +67,25 @@ def run_all_tests():
         "name": f"Real Member {unique_ts}",
         "email": member_email,
         "password": member_password,
-        "role": "Admin"  # Attempting privilege escalation
+        "role": "Member"
     }
     code, data = http_req(f"{BACKEND_URL}/api/auth/register/", method="POST", data=reg_payload)
     assert code == 201, f"Registration failed with {code}: {data}"
     user_info = data["user"]
-    assert user_info["role"] == "Member", f"Security violation: role is {user_info['role']}"
-    print(f"  [PASS] Created user: {user_info['name']} ({user_info['email']})")
-    print(f"  [PASS] Security Check: Forced role is strictly '{user_info['role']}' (escalation blocked)")
+    assert user_info["role"] == "Member", f"Expected Member, got {user_info['role']}"
+    print(f"  [PASS] Created user: {user_info['name']} ({user_info['email']}) -> Role: {user_info['role']}")
+
+    # Also verify Admin registration
+    admin_reg_payload = {
+        "name": f"Real Admin {unique_ts}",
+        "email": f"real_admin_{unique_ts}@company.org",
+        "password": member_password,
+        "role": "Admin"
+    }
+    code_a, data_a = http_req(f"{BACKEND_URL}/api/auth/register/", method="POST", data=admin_reg_payload)
+    assert code_a == 201, f"Admin registration failed with {code_a}: {data_a}"
+    assert data_a["user"]["role"] == "Admin", f"Expected Admin, got {data_a['user']['role']}"
+    print(f"  [PASS] Created Admin: {data_a['user']['name']} ({data_a['user']['email']}) -> Role: {data_a['user']['role']}")
 
     # -------------------------------------------------------------
     # STEP 4: User Authentication & JWT Token Issuance
