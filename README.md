@@ -13,6 +13,9 @@
 
 ## ⚡ Quick Start (Run Locally in 10 Seconds)
 
+> 📖 **Need a step-by-step setup guide for a new computer (ZIP or Git clone)?**  
+> Check the plain guide: **[SETUP_AND_RUN_GUIDE.md](./SETUP_AND_RUN_GUIDE.md)**
+
 ### 1-Click Launch (Windows)
 Double-click **`start.bat`** in this folder!
 
