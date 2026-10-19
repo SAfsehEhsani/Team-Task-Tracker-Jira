@@ -8,12 +8,25 @@ class HealthCheckView(APIView):
     permission_classes = []
 
     def get(self, request):
+        db_status = "connected"
+        db_error = None
+        user_count = 0
+        try:
+            from authentication.models import User
+            user_count = User.objects.count()
+        except Exception as e:
+            db_status = "error"
+            db_error = str(e)
+
         return Response({
-            'status': 'healthy',
+            'status': 'healthy' if db_status == "connected" else 'database_error',
             'service': 'Team Task Tracker API',
-            'database': 'MongoDB',
+            'database': db_status,
+            'database_error': db_error,
+            'user_count': user_count,
             'version': '1.0.0'
         })
+
 
 urlpatterns = [
     path('api/health/', HealthCheckView.as_view(), name='health_check'),
