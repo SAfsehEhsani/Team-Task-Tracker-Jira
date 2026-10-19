@@ -216,6 +216,51 @@ class TeamRemoveMemberView(APIView):
             'team': team.to_dict()
         }, status=status.HTTP_200_OK)
 
+class TeamAddMembersView(APIView):
+    permission_classes = [IsAuthenticatedCustom]
+
+    def post(self, request, team_id):
+        try:
+            team = Team.objects.get(id=ObjectId(team_id))
+        except (Team.DoesNotExist, Exception):
+            return Response({'error': 'Team not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if request.user.role != 'Admin':
+            return Response({'error': 'Only Admins can add members to a team'}, status=status.HTTP_403_FORBIDDEN)
+
+        user_ids = request.data.get('user_ids', [])
+        if not user_ids:
+            return Response({'error': 'user_ids is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        existing_ids = {str(m.id) for m in team.members if m}
+        added_users = []
+
+        for uid in user_ids:
+            try:
+                target_user = User.objects.get(id=ObjectId(uid))
+                if str(target_user.id) not in existing_ids:
+                    team.members.append(target_user)
+                    existing_ids.add(str(target_user.id))
+                    added_users.append(target_user)
+            except Exception:
+                pass
+
+        if added_users:
+            team.save()
+            user_names = ", ".join([u.name for u in added_users])
+            log_activity(
+                team=team,
+                user=request.user,
+                action_type='member_joined',
+                message=f'{request.user.name} added {user_names} to the team.'
+            )
+
+        return Response({
+            'message': f'Added {len(added_users)} member(s) to team',
+            'added_count': len(added_users),
+            'team': team.to_dict()
+        }, status=status.HTTP_200_OK)
+
 # Public Invitation Link API Views
 class InvitationDetailView(APIView):
     authentication_classes = []

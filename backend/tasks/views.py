@@ -82,10 +82,14 @@ class TeamTasksView(APIView):
 
             # Verify assignee is in team if specified
             if assigned_user and not team.is_member(assigned_user):
-                return Response(
-                    {'assigned_to': ['Assigned user must be a member of this team.']},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+                if request.user.role == 'Admin':
+                    team.members.append(assigned_user)
+                    team.save()
+                else:
+                    return Response(
+                        {'assigned_to': ['Assigned user must be a member of this team.']},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
 
             task = Task(
                 title=validated_data['title'].strip(),
@@ -169,10 +173,14 @@ class TaskDetailView(APIView):
 
                 if old_assigned_id != new_assigned_id:
                     if new_assigned and not task.team.is_member(new_assigned):
-                        return Response(
-                            {'assigned_to': ['Assigned user must be a member of this team.']},
-                            status=status.HTTP_400_BAD_REQUEST
-                        )
+                        if request.user.role == 'Admin':
+                            task.team.members.append(new_assigned)
+                            task.team.save()
+                        else:
+                            return Response(
+                                {'assigned_to': ['Assigned user must be a member of this team.']},
+                                status=status.HTTP_400_BAD_REQUEST
+                            )
                     task.assigned_to = new_assigned
                     if new_assigned:
                         msg = f'{request.user.name} assigned "{task.title}" to {new_assigned.name}.'

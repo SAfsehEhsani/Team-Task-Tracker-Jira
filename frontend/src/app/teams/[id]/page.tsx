@@ -253,10 +253,10 @@ function TeamDetailContent() {
                 <button
                   id="btn-invite-member"
                   onClick={() => setIsInviteModalOpen(true)}
-                  className="px-4 py-2.5 rounded-2xl bg-purple-600/90 hover:bg-purple-500 text-white font-semibold text-xs shadow-lg shadow-purple-600/25 transition-all flex items-center space-x-1.5"
+                  className="px-4 py-2.5 rounded-2xl bg-purple-600/90 hover:bg-purple-500 text-white font-semibold text-xs shadow-lg shadow-purple-600/25 transition-all flex items-center space-x-1.5 cursor-pointer"
                 >
                   <UserPlus className="w-3.5 h-3.5" />
-                  <span>Invite Member</span>
+                  <span>Add / Invite Members</span>
                 </button>
               ) : (
                 <div

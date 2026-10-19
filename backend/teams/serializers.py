@@ -11,17 +11,34 @@ class TeamSerializer(serializers.Serializer):
     member_count = serializers.IntegerField(read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
 
+from bson import ObjectId
+
 class TeamCreateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=150, required=True)
     description = serializers.CharField(allow_blank=True, required=False, default="")
+    member_ids = serializers.ListField(child=serializers.CharField(), required=False, default=[])
 
     def create(self, validated_data):
         user = self.context['request'].user
+        member_ids = validated_data.get('member_ids', [])
+        
+        selected_members = [user]
+        existing_ids = {str(user.id)}
+        
+        for mid in member_ids:
+            try:
+                target_user = User.objects.get(id=ObjectId(mid))
+                if str(target_user.id) not in existing_ids:
+                    selected_members.append(target_user)
+                    existing_ids.add(str(target_user.id))
+            except Exception:
+                pass
+
         team = Team(
             name=validated_data['name'].strip(),
             description=validated_data.get('description', '').strip(),
             created_by=user,
-            members=[user] # Creator is automatically a member
+            members=selected_members
         )
         team.save()
         return team

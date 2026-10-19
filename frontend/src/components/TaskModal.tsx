@@ -28,8 +28,17 @@ export default function TaskModal({
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<TaskStatus>(defaultStatus);
   const [assignedTo, setAssignedTo] = useState<string>('');
+  const [orgUsers, setOrgUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen && currentUser?.role === 'Admin') {
+      api.get('/auth/users/')
+        .then((res) => setOrgUsers(res.data.users || []))
+        .catch((err) => console.error('Failed to load organization users', err));
+    }
+  }, [isOpen, currentUser]);
 
   useEffect(() => {
     if (taskToEdit) {
@@ -176,11 +185,26 @@ export default function TaskModal({
               >
                 <option value="">Unassigned</option>
                 {currentUser?.role === 'Admin' ? (
-                  team.members.map((member) => (
-                    <option key={member.id} value={member.id}>
-                      {member.name} ({member.email})
-                    </option>
-                  ))
+                  <>
+                    <optgroup label="Team Workspace Members">
+                      {team.members.map((member) => (
+                        <option key={member.id} value={member.id}>
+                          {member.name} ({member.email})
+                        </option>
+                      ))}
+                    </optgroup>
+                    {orgUsers.filter((u) => !team.members.some((m) => m.id === u.id)).length > 0 && (
+                      <optgroup label="Other Organization Users (Auto-add to team)">
+                        {orgUsers
+                          .filter((u) => !team.members.some((m) => m.id === u.id))
+                          .map((u) => (
+                            <option key={u.id} value={u.id}>
+                              {u.name} ({u.email}) — [{u.role}]
+                            </option>
+                          ))}
+                      </optgroup>
+                    )}
+                  </>
                 ) : (
                   currentUser && (
                     <option value={currentUser.id}>

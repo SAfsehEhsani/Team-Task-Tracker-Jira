@@ -4,6 +4,7 @@ from teams.views import (
     TeamDetailView,
     TeamInviteView,
     TeamRemoveMemberView,
+    TeamAddMembersView,
     InvitationDetailView,
     AcceptInvitationView,
 )
@@ -14,5 +15,6 @@ urlpatterns = [
     path('invitations/<str:token>/accept/', AcceptInvitationView.as_view(), name='invitation_accept_teams'),
     path('<str:team_id>/', TeamDetailView.as_view(), name='team_detail'),
     path('<str:team_id>/invite/', TeamInviteView.as_view(), name='team_invite'),
+    path('<str:team_id>/add-members/', TeamAddMembersView.as_view(), name='team_add_members'),
     path('<str:team_id>/members/<str:user_id>/', TeamRemoveMemberView.as_view(), name='team_remove_member'),
 ]
