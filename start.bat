@@ -5,6 +5,9 @@ echo    Starting Team Task Tracker (PulseSync)
 echo ===================================================
 echo.
 
+:: [0/2] Verify MongoDB service
+net start MongoDB >nul 2>&1
+
 echo [1/2] Launching Django REST Backend on http://127.0.0.1:8000 ...
 start "Team Task Tracker - Backend (Django)" cmd /k "backend_venv\Scripts\python backend\manage.py runserver 127.0.0.1:8000"
 
