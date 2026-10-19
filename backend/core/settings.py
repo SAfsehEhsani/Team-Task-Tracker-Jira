@@ -7,9 +7,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables from .env file if present
 load_dotenv(BASE_DIR / '.env')
 
-SECRET_KEY = os.environ.get('SECRET_KEY', 'super-secret-django-mongodb-task-tracker-key-2026')
+SECRET_KEY = (os.environ.get('SECRET_KEY') or 'super-secret-django-mongodb-task-tracker-key-2026').strip()
 
-DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
+DEBUG = (os.environ.get('DEBUG') or 'True').strip().lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', '*').split(',') if h.strip()]
 
