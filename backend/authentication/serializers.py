@@ -14,6 +14,7 @@ class RegisterSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=150, required=True)
     email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, min_length=6, required=True)
+    role = serializers.ChoiceField(choices=['Admin', 'Member'], default='Member', required=False)
 
     def validate_email(self, value):
         normalized = value.strip().lower()
@@ -22,12 +23,10 @@ class RegisterSerializer(serializers.Serializer):
         return normalized
 
     def create(self, validated_data):
-        # Public self-registration ALWAYS creates Member role.
-        # Only existing Admins can promote users or assign Admin roles.
         user = User(
             name=validated_data['name'].strip(),
             email=validated_data['email'],
-            role='Member'
+            role=validated_data.get('role', 'Member')
         )
         user.set_password(validated_data['password'])
         user.save()
