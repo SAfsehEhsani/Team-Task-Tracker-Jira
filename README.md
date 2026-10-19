@@ -60,17 +60,12 @@ For in-depth architectural details, database schemas, full REST API endpoints re
 
 ---
 
-## 🐳 Docker Deployment
+## 📌 Application Access URLs
 
-Run the complete multi-container stack (Frontend + Backend + MongoDB) with Docker:
-
-```bash
-docker compose up --build -d
-```
-
-* **Frontend**: `http://localhost:3000`
-* **Backend API**: `http://localhost:8000/api/health/`
-* **MongoDB**: `localhost:27017`
+* **Frontend Web Application**: [http://localhost:3000](http://localhost:3000)
+* **Backend REST API**: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+* **Backend Health Check**: [http://127.0.0.1:8000/api/health/](http://127.0.0.1:8000/api/health/)
+* **MongoDB Storage**: Local MongoDB on `127.0.0.1:27017` (Database: `tasktracker_db`)
 
 ---
 
