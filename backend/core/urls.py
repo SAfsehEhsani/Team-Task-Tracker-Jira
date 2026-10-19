@@ -18,14 +18,21 @@ class HealthCheckView(APIView):
             db_status = "error"
             db_error = str(e)
 
+        import re
+        import os
+        raw = os.environ.get('MONGO_URI') or os.environ.get('MONGO_URL') or os.environ.get('MONGODB_URL') or ''
+        masked_uri = re.sub(r'://([^:]*):([^@]*)@', r'://\1:***@', raw.strip()) if raw else 'NOT_SET'
+
         return Response({
             'status': 'healthy' if db_status == "connected" else 'database_error',
             'service': 'Team Task Tracker API',
             'database': db_status,
             'database_error': db_error,
+            'connected_to': masked_uri,
             'user_count': user_count,
             'version': '1.0.0'
         })
+
 
 
 urlpatterns = [
