@@ -84,16 +84,20 @@ The system enforces two distinct roles throughout the UI and API:
 
 ---
 
-### 2. Member Privacy & Security Lockdown
+### 2. Role-Based Account Registration & Strict RBAC Enforcement
 
-1. **Self-Promotion Blocked at API Level**:
-   * The public registration endpoint (`POST /api/auth/register/`) strictly hardcodes `role='Member'` regardless of any payload supplied.
-   * `PATCH /api/auth/users/<id>/` is guarded by `IsAuthenticatedCustom` and `IsAdminUserRole`. Any regular member attempting role elevation receives **HTTP 403 Forbidden**.
-2. **Member Directory Obfuscation**:
-   * The team workspace view hides other member emails and avatars from regular members to protect privacy.
-   * The task assignee dropdown restricts regular members to choosing only `"Assign to Me"` or `"Unassigned"`. Only Admins can assign tasks to teammates.
-3. **No Quick-Switch or Demo Cards**:
-   * Prototype switcher buttons and 1-click demo login buttons have been completely removed. Authentication requires real user credentials.
+1. **User Choice on Registration**:
+   * When creating an account via `POST /api/auth/register/` or the `/register` web interface, users can choose their initial role: **Admin** (Full workspace & team management) or **User / Member** (Standard task board collaboration).
+   * All accounts are permanently persisted in the MongoDB `users` collection with argon2/pbkdf2 hashed passwords.
+   * New Admins immediately gain access to `/dashboard` with team creation, user management (`/users`), and invite dispatch.
+   * New Members are immediately placed in a secure member sandbox where unauthorized administrative operations are forbidden (**HTTP 403 Forbidden**).
+2. **Strict Member Privacy & Boundary Isolation**:
+   * Regular members cannot access or query `/api/auth/users/`.
+   * Team workspace rosters hide other member emails and details from regular members to protect privacy.
+   * The task assignee dropdown restricts regular members to choosing only `"Assign to Me"` or `"Unassigned"`. Only Admins can assign tasks across other team members.
+3. **Login Presets & Custom Sign-In**:
+   * The `/login` page offers dual 1-click preset cards for reviewer convenience (**Admin: Saumyakanta** and **User: Alice Chen**).
+   * Any newly registered user can log in via their custom email and password at any time, with all their teams, tasks, and data fully preserved.
 
 ---
 
