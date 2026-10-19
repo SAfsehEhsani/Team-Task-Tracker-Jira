@@ -101,34 +101,19 @@ The system enforces two distinct roles throughout the UI and API:
 
 ---
 
-### 3. Direct Email Invitation & Onboarding System
+### 3. Team Member Onboarding & Assignment System
 
-```
-[Admin clicks "Invite Member"]
-         │
-         ▼
-[Enter Email: teammate@company.com]
-         │
-         ▼
-[PulseSync generates 43-character cryptographic token]
-         │
-         ├──► Dispatches responsive HTML email via SMTP to teammate's inbox
-         │
-         └──► Generates instant Join Link: http://localhost:3000/join?token=XYZ...
-                 │
-                 ▼
-         [Invitee opens link -> Sets Password -> Joins Workspace]
-                 │
-                 ▼
-         [Token invalidated (Single-Use Only)]
-                 │
-                 ▼
-         [Activity Timeline records member join event]
-```
-
-* **Live SMTP Delivery**: Integrated with Gmail, Brevo, SendGrid, or any custom SMTP provider.
-* **Fallback Link**: In addition to email dispatch, the modal provides a 1-click copyable join link for instant onboarding.
-* **Single-Use Cryptographic Tokens**: Once an invitation is accepted, the token is permanently invalidated. Reusing tokens returns an error.
+1. **Member Selection Upon Team Creation**:
+   * When an Admin creates a new workspace (`POST /api/teams/`), the `CreateTeamModal` fetches all registered organization users.
+   * Admins can multi-select any Members and Admins to immediately include in the team upon creation (`member_ids: [...]`).
+   * The creator is automatically added as the Workspace Creator.
+2. **Direct Member Addition in Workspace**:
+   * In any existing team workspace, Admins can click **`+ Add / Invite Members`** to open the membership modal.
+   * **Tab 1 ("Add Existing Users")**: Allows selecting any registered user in the organization not yet in the team and adds them in 1 click (`POST /api/teams/<id>/add-members/`).
+   * **Tab 2 ("Invite via Email / Link")**: Dispatches cryptographic single-use invitation emails and links for unregistered external members.
+3. **Cross-Organization Task Assignment**:
+   * When creating or editing tasks in `TaskModal`, Admins can assign tasks to existing team members or any other registered organization user.
+   * Assigning a task to an organization user automatically adds them to the team workspace so they have immediate access.
 
 ---
 
