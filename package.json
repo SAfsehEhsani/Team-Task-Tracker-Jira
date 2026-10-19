@@ -1,0 +1,14 @@
+{
+  "name": "team-task-tracker",
+  "version": "1.0.0",
+  "description": "Team Task Tracker with Role-Based Permissions and Activity Timeline",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "backend_venv\\Scripts\\python backend/manage.py runserver 127.0.0.1:8000",
+    "build": "npm run build --prefix frontend",
+    "seed": "backend_venv\\Scripts\\python backend/seed_data.py",
+    "test:backend": "backend_venv\\Scripts\\python backend/manage.py test tests_api"
+  }
+}

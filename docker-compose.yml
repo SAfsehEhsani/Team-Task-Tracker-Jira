@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # MongoDB database service
+  mongo:
+    image: mongo:7.0
+    container_name: tasktracker_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - tasktracker_net
+
+  # Django REST Framework Backend service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tasktracker_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=production-secret-key-tasktracker-secure-2026
+      - DEBUG=False
+      - ALLOWED_HOSTS=*
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+      - MONGO_DB=tasktracker_db
+    depends_on:
+      - mongo
+    networks:
+      - tasktracker_net
+
+  # Next.js Frontend service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    container_name: tasktracker_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - tasktracker_net
+
+volumes:
+  mongo_data:
+
+networks:
+  tasktracker_net:
+    driver: bridge
