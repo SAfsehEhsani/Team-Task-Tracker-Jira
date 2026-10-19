@@ -9,7 +9,9 @@ from authentication.serializers import RegisterSerializer, LoginSerializer, Refr
 from authentication.utils import generate_tokens
 from authentication.permissions import IsAuthenticatedCustom, IsAdminUserRole
 from authentication.models import User
-from teams.models import Team
+from teams.models import Team, TeamInvitation
+from tasks.models import Task
+from activity.models import Activity
 
 class RegisterView(APIView):
     authentication_classes = []
@@ -205,5 +207,37 @@ class UserDetailAdminView(APIView):
         return Response({
             'message': f'User {deleted_name} ({deleted_email}) was permanently removed.',
             'user_id': user_id
+        }, status=status.HTTP_200_OK)
+
+class DatabaseInspectorView(APIView):
+    """Admin-only inspector that dumps live MongoDB collections in structured JSON format."""
+    permission_classes = [IsAuthenticatedCustom, IsAdminUserRole]
+
+    def get(self, request):
+        users_data = [u.to_dict() for u in User.objects().order_by('-created_at')]
+        teams_data = [t.to_dict() for t in Team.objects().order_by('-created_at')]
+        tasks_data = [t.to_dict() for t in Task.objects().order_by('-created_at')]
+        activities_data = [a.to_dict() for a in Activity.objects().order_by('-created_at').limit(150)]
+        invitations_data = [i.to_dict() for i in TeamInvitation.objects().order_by('-created_at')]
+
+        return Response({
+            'database': 'tasktracker_db',
+            'engine': 'MongoEngine ODM',
+            'status': 'connected',
+            'counts': {
+                'users': len(users_data),
+                'teams': len(teams_data),
+                'tasks': len(tasks_data),
+                'activities': len(activities_data),
+                'invitations': len(invitations_data),
+                'total_documents': len(users_data) + len(teams_data) + len(tasks_data) + len(activities_data) + len(invitations_data)
+            },
+            'collections': {
+                'users': users_data,
+                'teams': teams_data,
+                'tasks': tasks_data,
+                'activities': activities_data,
+                'invitations': invitations_data
+            }
         }, status=status.HTTP_200_OK)
 

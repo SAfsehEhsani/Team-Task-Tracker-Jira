@@ -6,6 +6,7 @@ from authentication.views import (
     CurrentUserView,
     UsersListCreateView,
     UserDetailAdminView,
+    DatabaseInspectorView,
 )
 
 urlpatterns = [
@@ -15,4 +16,5 @@ urlpatterns = [
     path('me/', CurrentUserView.as_view(), name='auth_me'),
     path('users/', UsersListCreateView.as_view(), name='auth_users_list_create'),
     path('users/<str:user_id>/', UserDetailAdminView.as_view(), name='auth_user_detail_admin'),
+    path('database-inspector/', DatabaseInspectorView.as_view(), name='auth_database_inspector'),
 ]

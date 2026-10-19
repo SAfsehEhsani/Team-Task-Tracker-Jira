@@ -8,6 +8,7 @@ import { api } from '@/lib/api';
 import { Team } from '@/types';
 import Navbar from '@/components/Navbar';
 import CreateTeamModal from '@/components/CreateTeamModal';
+import MongoStorageModal from '@/components/MongoStorageModal';
 import { 
   Users, 
   Plus, 
@@ -32,6 +33,7 @@ export default function DashboardPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isStorageModalOpen, setIsStorageModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
@@ -176,15 +178,36 @@ export default function DashboardPage() {
             <p className="text-[11px] text-slate-500 mt-1">Timeline refresh rate</p>
           </div>
 
-          <div className="p-5 rounded-2xl bg-[#0b101d]/80 border border-white/[0.07] backdrop-blur-xl">
+          <div
+            id="card-storage-mongodb"
+            onClick={() => {
+              if (user?.role === 'Admin') {
+                setIsStorageModalOpen(true);
+              }
+            }}
+            className={`p-5 rounded-2xl bg-[#0b101d]/80 border border-white/[0.07] backdrop-blur-xl transition-all ${
+              user?.role === 'Admin'
+                ? 'cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-950/20 group shadow-lg hover:shadow-cyan-950/30'
+                : ''
+            }`}
+          >
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-slate-400">Storage</span>
-              <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400">
+              <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 group-hover:scale-110 transition-transform">
                 <Layers className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-white mt-2">MongoDB</p>
-            <p className="text-[11px] text-slate-500 mt-1">MongoEngine ODM</p>
+            <div className="flex items-baseline space-x-2 mt-2">
+              <p className="text-2xl font-bold text-white">MongoDB</p>
+              {user?.role === 'Admin' && (
+                <span className="text-[10px] font-semibold text-cyan-400 bg-cyan-500/15 px-2 py-0.5 rounded-full border border-cyan-500/30 flex items-center space-x-1">
+                  <span>Inspect JSON</span>
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-500 mt-1">
+              {user?.role === 'Admin' ? 'Tap to view live JSON collections' : 'MongoEngine ODM'}
+            </p>
           </div>
         </div>
 
@@ -320,6 +343,11 @@ export default function DashboardPage() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onTeamCreated={(newTeam) => setTeams([newTeam, ...teams])}
+      />
+
+      <MongoStorageModal
+        isOpen={isStorageModalOpen}
+        onClose={() => setIsStorageModalOpen(false)}
       />
     </div>
   );
